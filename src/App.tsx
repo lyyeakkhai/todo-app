@@ -5,25 +5,28 @@ import { UserDirectory } from './pages/UserDirectory';
 import { UserDetail } from './pages/UserDetail';
 import { NotFound } from './pages/NotFound';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import './App.css';
 
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="app-layout">
-          <Navbar />
-          <div className="content-container">
-            <Routes>
-              <Route path="/" element={<Navigate to="/todos" replace />} />
-              <Route path="/todos" element={<TodoApp />} />
-              <Route path="/users" element={<UserDirectory />} />
-              <Route path="/users/:id" element={<UserDetail />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+      <CartProvider>
+        <BrowserRouter>
+          <div className="app-layout">
+            <Navbar />
+            <div className="content-container">
+              <Routes>
+                <Route path="/" element={<Navigate to="/todos" replace />} />
+                <Route path="/todos" element={<TodoApp />} />
+                <Route path="/users" element={<UserDirectory />} />
+                <Route path="/users/:id" element={<UserDetail />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </BrowserRouter>
+        </BrowserRouter>
+      </CartProvider>
     </AuthProvider>
   );
 }
