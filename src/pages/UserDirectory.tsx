@@ -1,48 +1,9 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { User } from '../types';
+import { useFetch } from '../hooks/useFetch';
 
 export function UserDirectory() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [retryTrigger, setRetryTrigger] = useState<number>(0);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Failed to load users (Status: ${res.status})`);
-        }
-        return res.json();
-      })
-      .then((data: User[]) => {
-        // Guard against race condition if component unmounted or effect re-ran
-        if (!isCancelled) {
-          setUsers(data);
-          setLoading(false);
-        }
-      })
-      .catch((err: Error) => {
-        if (!isCancelled) {
-          setError(err.message);
-          setLoading(false);
-        }
-      });
-
-    // Cleanup: prevents setting state if component unmounts or retry triggers
-    return () => {
-      isCancelled = true;
-    };
-  }, [retryTrigger]);
-
-  const handleRetry = () => {
-    setLoading(true);
-    setError(null);
-    setRetryTrigger((prev) => prev + 1);
-  };
+  const { data: users, loading, error } = useFetch<User[]>('https://jsonplaceholder.typicode.com/users');
 
   return (
     <main className="user-directory-card">
@@ -71,14 +32,14 @@ export function UserDirectory() {
         <div className="error-state">
           <span className="error-icon">⚠️</span>
           <p className="error-message">{error}</p>
-          <button type="button" className="retry-btn" onClick={handleRetry}>
+          <button type="button" className="retry-btn" onClick={() => window.location.reload()}>
             Try Again
           </button>
         </div>
       )}
 
       {/* State 3: Empty State */}
-      {!loading && !error && users.length === 0 && (
+      {!loading && !error && users && users.length === 0 && (
         <div className="empty-state">
           <span className="empty-icon">👥</span>
           <p className="empty-message">No users found.</p>
@@ -86,7 +47,7 @@ export function UserDirectory() {
       )}
 
       {/* State 4: Data List */}
-      {!loading && !error && users.length > 0 && (
+      {!loading && !error && users && users.length > 0 && (
         <div className="user-grid">
           {users.map((user) => (
             <div key={user.id} className="user-card">

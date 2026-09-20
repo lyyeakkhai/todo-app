@@ -1,40 +1,9 @@
-import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import type { User } from '../types';
+import { useFetch } from '../hooks/useFetch';
 
 function UserDetailContent({ id }: { id: string | undefined }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`User with ID ${id} not found (Status: ${res.status})`);
-        }
-        return res.json();
-      })
-      .then((data: User) => {
-        if (!isCancelled) {
-          setUser(data);
-          setLoading(false);
-        }
-      })
-      .catch((err: Error) => {
-        if (!isCancelled) {
-          setError(err.message);
-          setLoading(false);
-        }
-      });
-
-    // Cleanup: prevents race conditions and state updates if :id changes or component unmounts
-    return () => {
-      isCancelled = true;
-    };
-  }, [id]);
+  const { data: user, loading, error } = useFetch<User>(`https://jsonplaceholder.typicode.com/users/${id}`);
 
   return (
     <main className="user-detail-card">
