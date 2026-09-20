@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { TodoApp } from './pages/TodoApp';
 import { UserDirectory } from './pages/UserDirectory';
 import { UserDetail } from './pages/UserDetail';
+import { Store } from './pages/Store';
 import { NotFound } from './pages/NotFound';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="/todos" element={<TodoApp />} />
                 <Route path="/users" element={<UserDirectory />} />
                 <Route path="/users/:id" element={<UserDetail />} />
+                <Route path="/store" element={<Store />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>

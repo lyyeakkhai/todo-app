@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { WindowWidthTracker } from './WindowWidthTracker';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { SignInModal } from './auth/SignInModal';
 
 export function Navbar() {
   const { user, signOut } = useAuth();
+  const { totalItems } = useCart();
   const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   return (
@@ -29,6 +31,17 @@ export function Navbar() {
               className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
             >
               Users
+            </NavLink>
+            <NavLink
+              to="/store"
+              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+            >
+              Store
+              {totalItems > 0 && (
+                <span className="nav-cart-badge" data-testid="nav-cart-count">
+                  {totalItems}
+                </span>
+              )}
             </NavLink>
           </nav>
 
