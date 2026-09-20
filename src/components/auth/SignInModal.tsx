@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { SignInForm } from './SignInForm';
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -7,19 +7,9 @@ interface SignInModalProps {
 }
 
 export function SignInModal({ isOpen, onClose }: SignInModalProps) {
-  const [email, setEmail] = useState('');
   const { signIn } = useAuth();
 
   if (!isOpen) return null;
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      signIn(email);
-      setEmail('');
-      onClose();
-    }
-  };
 
   const handleQuickSignIn = (demoEmail: string) => {
     signIn(demoEmail);
@@ -36,25 +26,7 @@ export function SignInModal({ isOpen, onClose }: SignInModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
-          <label htmlFor="auth-email" className="modal-label">
-            Email Address
-          </label>
-          <input
-            id="auth-email"
-            type="email"
-            className="modal-input"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoFocus
-          />
-
-          <button type="submit" className="modal-submit-btn">
-            Sign In
-          </button>
-        </form>
+        <SignInForm onSuccess={() => setTimeout(onClose, 500)} />
 
         <div className="modal-quick-login">
           <p className="quick-login-label">Or quick sign in as:</p>
