@@ -1,4 +1,5 @@
-import { createContext, useContext, useReducer, type ReactNode, type Dispatch } from 'react';
+import { createContext, useContext, useReducer, useEffect, type ReactNode, type Dispatch } from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 export interface CartItem {
   id: number;
@@ -97,7 +98,13 @@ export interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] });
+  const [persistedItems, setPersistedItems] = useLocalStorage<CartItem[]>('mission_cart_items', []);
+  const [state, dispatch] = useReducer(cartReducer, { items: persistedItems });
+
+  // Synchronize cart changes to localStorage via useLocalStorage
+  useEffect(() => {
+    setPersistedItems(state.items);
+  }, [state.items, setPersistedItems]);
 
   const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);

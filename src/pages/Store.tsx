@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useCart, type CartItem } from '../context/CartContext';
 import { CheckoutSummary } from '../components/cart/CheckoutSummary';
+import { SearchBox } from '../components/common/SearchBox';
 
 interface Product {
   id: number;
@@ -63,6 +65,17 @@ const CATALOG_PRODUCTS: Product[] = [
 
 export function Store() {
   const { state, dispatch } = useCart();
+  const [searchFilter, setSearchFilter] = useState('');
+
+  const filteredProducts = CATALOG_PRODUCTS.filter((product) => {
+    const q = searchFilter.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      product.name.toLowerCase().includes(q) ||
+      product.category.toLowerCase().includes(q) ||
+      product.description.toLowerCase().includes(q)
+    );
+  });
 
   const handleAddToCart = (product: Product) => {
     dispatch({
@@ -110,9 +123,23 @@ export function Store() {
       <div className="store-layout">
         {/* Left Column: Products Catalog */}
         <section className="catalog-section">
-          <h3 className="section-title">Products Catalog</h3>
-          <div className="catalog-grid">
-            {CATALOG_PRODUCTS.map((product) => {
+          <div className="catalog-header-row">
+            <h3 className="section-title">Products Catalog</h3>
+            <span className="results-count">
+              Showing {filteredProducts.length} of {CATALOG_PRODUCTS.length} items
+            </span>
+          </div>
+
+          <SearchBox onDebouncedChange={setSearchFilter} />
+
+          {filteredProducts.length === 0 ? (
+            <div className="empty-search-state">
+              <span className="empty-search-icon">🔍</span>
+              <p>No products found matching "{searchFilter}"</p>
+            </div>
+          ) : (
+            <div className="catalog-grid">
+              {filteredProducts.map((product) => {
               const inCartItem = state.items.find((i) => i.id === product.id);
 
               return (
@@ -136,7 +163,8 @@ export function Store() {
                 </div>
               );
             })}
-          </div>
+            </div>
+          )}
         </section>
 
         {/* Right Column: Active Cart & Zero-Prop Checkout Summary */}
