@@ -45,11 +45,11 @@ async function capture() {
     const signInBtn = await page.waitForSelector('.sign-in-btn');
     await signInBtn.click();
     await page.waitForSelector('.modal-container');
-    const emailInput = await page.waitForSelector('#auth-email');
+    const emailInput = await page.waitForSelector('#auth-email-input');
     await emailInput.type('alex@example.com');
-    const submitBtn = await page.waitForSelector('.modal-submit-btn');
+    const submitBtn = await page.waitForSelector('.form-submit-btn');
     await submitBtn.click();
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 700));
 
     console.log('Capturing NavBar Signed In (Hi, alex@example.com)...');
     await page.screenshot({ path: path.join(screenshotsDir, 'navbar-signed-in.png') });
@@ -70,6 +70,12 @@ async function capture() {
 
     console.log('Capturing Cart after line item disappeared at quantity 0...');
     await page.screenshot({ path: path.join(screenshotsDir, 'cart-line-disappearing-at-quantity-zero.png') });
+
+    console.log('5. Capturing Debounce Search Box (raw vs debounced)...');
+    const searchInput = await page.waitForSelector('#catalog-search');
+    await searchInput.type('keychron');
+    await new Promise((r) => setTimeout(r, 600));
+    await page.screenshot({ path: path.join(screenshotsDir, 'debounce-search-demo.png') });
 
     console.log('All required screenshots captured successfully!');
   } finally {
